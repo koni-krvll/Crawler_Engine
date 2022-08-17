@@ -1,0 +1,7 @@
+wheel
+python-dotenv
+flask
+gunicorn
+selenium
+selenium_stealth
+googlemaps
