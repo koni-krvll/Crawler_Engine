@@ -4,4 +4,5 @@ flask
 gunicorn
 selenium
 selenium_stealth
+bs4
 googlemaps

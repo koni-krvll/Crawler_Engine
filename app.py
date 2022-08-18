@@ -1,15 +1,17 @@
-from flask import Flask, request, abort
 from dotenv import load_dotenv
-from os import getenv
-from parasytes.filter import getClubs
-
+from os import getenv, path
+import sys
+sys.path.insert(1, path.abspath('./lib'))
 load_dotenv()
 KEY = getenv('KEY')
 if not KEY:
     raise Exception('No KEY set')
 
-application = Flask(__name__)
+from flask import Flask, request, abort
+from lib.parasytes.leech import getMixedClubs
+from lib.parasytes.maps import getPopularTimes
 
+application = Flask(__name__)
 
 @application.before_request
 def hook():
@@ -20,12 +22,15 @@ def hook():
 
 @application.route('/all', methods=['GET'])
 def index():
-    return getClubs()
+    return getMixedClubs()
 
 
 @application.route('/<id>', methods=['GET'])
 def get(id):
-    return list(filter((lambda club: club['id'] == id), getClubs()))
+    try:
+        return getPopularTimes(id)
+    except:
+        return {}
 
 
 @application.route('/events', methods=['GET'])
@@ -36,7 +41,6 @@ def events():
 @application.route('/events/<id>', methods=['GET'])
 def get_event(id):
     return f'Get event!{id}'
-
 
 if __name__ == '__main__':
     application.run()
