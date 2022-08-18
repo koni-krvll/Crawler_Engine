@@ -1,3 +1,8 @@
+import sys
+from os import path
+if __name__ == '__main__':
+    sys.path.insert(1, path.abspath('./lib'))
+
 from parasytes.spy import getSpy
 from time import sleep
 from parsers.nextApolloParser import parsePageIntoJson
@@ -15,6 +20,12 @@ def filterClub(club, id):
     Filter objects that are not the club passed by id
     """
     return club.get('id', '') == id
+
+def filterEvents(event):
+    return event.get('__typename', '') == 'Event'
+
+def filterEvent(event):
+    return True
 
 def getClubs():
     """
@@ -36,9 +47,18 @@ def getClub(id):
     values = parsePageIntoJson(spy.page_source)
     return list(filter(lambda club: filterClub(club, id), values))[0]
 
+def getEvents():
+    spy = getSpy()
+    spy.get(f'https://ra.co/events/de/berlin')
+    sleep(SLEEP_SECONDS)
+    return list(filter(filterEvents, parsePageIntoJson(spy.page_source)))
 
+def getEvent(id):
+    spy = getSpy()
+    spy.get(f'https://ra.co/events/{id}')
+    sleep(SLEEP_SECONDS)
+    return list(filter(filterEvents, parsePageIntoJson(spy.page_source)))
 
 if __name__ == '__main__':
-    clubs = getClubs()
-    club = getClub(clubs[0]['id'])
-    print(club)
+    import json
+    json.dump(getEvent(getEvents()[1]['id']), open('events.json', 'w'), indent=2)

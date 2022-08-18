@@ -49,22 +49,3 @@ def getSpy():
             )
 
     return driver
-
-if __name__ == '__main__':
-    driver = getSpy()
-    driver.get("https://ra.co/events/1536838")
-    sleep(5)
-    with (open("event_data.json", "w")) as f:
-        f.write(driver.page_source)
-    driver.get("https://ra.co/clubs/5031")
-    sleep(5)
-    with (open("club_data.json", "w")) as f:
-        f.write(driver.page_source)
-    driver.get("https://ra.co/clubs/de/berlin")
-    sleep(5)
-    with (open("clubs_data.json", "w")) as f:
-        f.write(driver.page_source)
-    driver.get("https://ra.co/events/de/berlin")
-    sleep(5)
-    with (open("events_data.json", "w")) as f:
-        f.write(driver.page_source)

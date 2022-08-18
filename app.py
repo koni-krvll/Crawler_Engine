@@ -8,7 +8,7 @@ if not KEY:
     raise Exception('No KEY set')
 
 from flask import Flask, request, abort
-from lib.parasytes.leech import getMixedClubs
+from lib.parasytes.leech import getMixedClubs, getEvent, getEvents
 from lib.parasytes.maps import getPopularTimes
 
 application = Flask(__name__)
@@ -35,12 +35,12 @@ def get(id):
 
 @application.route('/events', methods=['GET'])
 def events():
-    return 'Get events!'
+    return getEvents()
 
 
 @application.route('/events/<id>', methods=['GET'])
 def get_event(id):
-    return f'Get event!{id}'
+    return getEvent(id)
 
 if __name__ == '__main__':
     application.run()

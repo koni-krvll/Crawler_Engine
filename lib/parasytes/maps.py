@@ -48,6 +48,3 @@ def getPopularTimes(id):
     result['hours'] = [result['now']['usually']
                        if v is None else v for v in result['hours']]
     return result
-
-if __name__ == "__main__":
-    print(getPopularTimes('ChIJIeqReMlRqEcRquFNJTyYoUw'))

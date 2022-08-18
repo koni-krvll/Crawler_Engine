@@ -1,5 +1,5 @@
 from multiprocessing import Pool, cpu_count
-from parasytes.ra import getClubs, getClub
+from parasytes import ra
 from parasytes.maps import getPlace
 import json
 
@@ -41,8 +41,26 @@ def cleanClub(club):
     finalClub['types'] = result.get('types', [])
     return finalClub
 
+def cleanEvent(event):
+    finalEvent = {}
+    finalEvent['id'] = int(event.get('id', '0'))
+    finalEvent['name'] = event.get('title', 'null')
+    finalEvent['description'] = event.get('content', 'null')
+    finalEvent['age'] = event.get('minimumAge', 0)
+    finalEvent['cost'] = event.get('cost', 'eur')
+    finalEvent['date'] = event.get('date', 'null')
+    finalEvent['startTime'] = event.get('startTime', 'null')
+    finalEvent['endTime'] = event.get('endTime', 'null')
+    finalEvent['attending'] = int(event.get('attending', '0'))
+    finalEvent['lineup'] = event.get('lineup', 'null')
+    finalEvent['ticketed'] = bool(event.get('isTicketed', 'false'))
+    finalEvent['festival'] = bool(event.get('isFestival', 'false'))
+    finalEvent['club'] = int((event.get('venue', {'__ref': 'Venue:0'})['__ref']).split(':')[1])
+    return finalEvent
+
+
 def getMixedClub(club):
-    club = getClub(club['id'])
+    club = ra.getClub(club['id'])
     try:
         club.update(getPlace(f"{club['name']} Club Berlin"))
     except:
@@ -54,10 +72,23 @@ def getMixedClub(club):
 
 
 def getMixedClubs():
-    clubs = getClubs()
+    clubs = ra.getClubs()
     with Pool(cpu_count()-1) as pool:
         clubs = pool.map(getMixedClub, clubs)
     return clubs
+
+def getEvent(event):
+    if type(event) == str:
+        event = ra.getEvent(event)[0]
+    else:
+        event = ra.getEvent(event['id'])[0]
+    return cleanEvent(event)
+
+def getEvents():
+    events = ra.getEvents()
+    with Pool(cpu_count()-1) as pool:
+        events = pool.map(cleanEvent, events)
+    return events
 
 if __name__ == '__main__':
     json.dump(getMixedClubs(), open('clubs.json', 'w'))
