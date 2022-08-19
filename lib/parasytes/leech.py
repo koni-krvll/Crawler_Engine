@@ -56,6 +56,7 @@ def cleanEvent(event):
     finalEvent['ticketed'] = bool(event.get('isTicketed', 'false'))
     finalEvent['festival'] = bool(event.get('isFestival', 'false'))
     finalEvent['club'] = int((event.get('venue', {'__ref': 'Venue:0'})['__ref']).split(':')[1])
+    finalEvent['images'] = event.get('images', [])
     return finalEvent
 
 
@@ -79,9 +80,9 @@ def getMixedClubs():
 
 def getEvent(event):
     if type(event) == str:
-        event = ra.getEvent(event)[0]
+        event = ra.getEvent(event)
     else:
-        event = ra.getEvent(event['id'])[0]
+        event = ra.getEvent(event['id'])
     return cleanEvent(event)
 
 def getEvents():

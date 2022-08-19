@@ -1,8 +1,12 @@
+import sys
+from os import path, getenv
+if __name__ == '__main__':
+    sys.path.insert(1, path.abspath('./lib'))
+
 from json import load
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium_stealth import stealth
-from os import getenv
 from dotenv import load_dotenv
 from time import sleep
 

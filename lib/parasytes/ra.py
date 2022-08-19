@@ -25,7 +25,7 @@ def filterEvents(event):
     return event.get('__typename', '') == 'Event'
 
 def filterEvent(event):
-    return True
+    return event.get('__typename', '') == 'Event' or event.get('__typename', '') == 'EventImage'
 
 def getClubs():
     """
@@ -57,7 +57,13 @@ def getEvent(id):
     spy = getSpy()
     spy.get(f'https://ra.co/events/{id}')
     sleep(SLEEP_SECONDS)
-    return list(filter(filterEvents, parsePageIntoJson(spy.page_source)))
+    events = list(filter(filterEvent, parsePageIntoJson(spy.page_source)))
+    event = next(e for e in events if e.get('__typename', '') == 'Event')
+    event['images'] = []
+    for e in events:
+        if e.get('__typename', '') == 'EventImage':
+            event['images'].append(e.get('filename', 'null'))
+    return event
 
 if __name__ == '__main__':
     import json
