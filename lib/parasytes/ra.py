@@ -1,13 +1,11 @@
+from concurrent.futures import wait
 import sys
 from os import path
 if __name__ == '__main__':
     sys.path.insert(1, path.abspath('./lib'))
 
 from parasytes.spy import getSpy
-from time import sleep
-from parsers.nextApolloParser import parsePageIntoJson
-
-SLEEP_SECONDS = 5
+from parsers.nextApolloParser import parsePageIntoJson, waitForNextData
 
 def filterClubs(club):
     """
@@ -33,7 +31,7 @@ def getClubs():
     """
     spy = getSpy()
     spy.get('https://ra.co/clubs/de/berlin?status=open')
-    sleep(SLEEP_SECONDS)
+    waitForNextData(spy)
     return list(filter(filterClubs, list(parsePageIntoJson(spy.page_source))))
 
 
@@ -43,20 +41,20 @@ def getClub(id):
     """
     spy = getSpy()
     spy.get(f'https://ra.co/clubs/{id}')
-    sleep(SLEEP_SECONDS)
+    waitForNextData(spy)
     values = parsePageIntoJson(spy.page_source)
     return list(filter(lambda club: filterClub(club, id), values))[0]
 
 def getEvents():
     spy = getSpy()
     spy.get(f'https://ra.co/events/de/berlin')
-    sleep(SLEEP_SECONDS)
+    waitForNextData(spy)
     return list(filter(filterEvents, parsePageIntoJson(spy.page_source)))
 
 def getEvent(id):
     spy = getSpy()
     spy.get(f'https://ra.co/events/{id}')
-    sleep(SLEEP_SECONDS)
+    waitForNextData(spy)
     events = list(filter(filterEvent, parsePageIntoJson(spy.page_source)))
     event = next(e for e in events if e.get('__typename', '') == 'Event')
     event['images'] = []

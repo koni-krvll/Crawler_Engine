@@ -41,7 +41,7 @@ def cleanClub(club):
     finalClub['types'] = result.get('types', [])
     return finalClub
 
-def cleanEvent(event):
+def cleanEvent(event, image = False):
     finalEvent = {}
     finalEvent['id'] = int(event.get('id', '0'))
     finalEvent['name'] = event.get('title', 'null')
@@ -56,7 +56,8 @@ def cleanEvent(event):
     finalEvent['ticketed'] = bool(event.get('isTicketed', 'false'))
     finalEvent['festival'] = bool(event.get('isFestival', 'false'))
     finalEvent['club'] = int((event.get('venue', {'__ref': 'Venue:0'})['__ref']).split(':')[1])
-    finalEvent['images'] = event.get('images', [])
+    if image:
+        finalEvent['images'] = event.get('images', [])
     return finalEvent
 
 
@@ -83,7 +84,7 @@ def getEvent(event):
         event = ra.getEvent(event)
     else:
         event = ra.getEvent(event['id'])
-    return cleanEvent(event)
+    return cleanEvent(event, True)
 
 def getEvents():
     events = ra.getEvents()

@@ -4,10 +4,16 @@ from dotenv import load_dotenv
 from googlemaps import Client
 from parasytes.spy import getSpy 
 
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
 load_dotenv()
 
 gmaps = Client(key=getenv("MAPS_API"), queries_per_second=32)
 
+def waitForMapsData(driver):
+    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, "//div[@class='g2BVhd eoFzo']")))
 
 def getPlace(query):
     result = gmaps.find_place(
@@ -26,7 +32,6 @@ def getPlaceId(id):
 def getPopularTimes(id):
     spy = getSpy()
     spy.get(f'https://www.google.com/maps/place/?q=place_id:{id}')
-    sleep(5)
     parent = spy.find_elements(by='xpath', value="//div[@class='g2BVhd eoFzo']")[0]
     children = parent.find_elements(by='xpath', value="div[@aria-label]")
     result = {'now': {}, 'hours': [None] * 24}
