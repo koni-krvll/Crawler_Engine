@@ -1,8 +1,4 @@
-import sys
-from os import path, getenv
-if __name__ == '__main__':
-    sys.path.insert(1, path.abspath('./lib'))
-
+from os import getenv
 from json import load
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options

@@ -1,11 +1,13 @@
 from multiprocessing import Pool, cpu_count
-from parasytes import ra
-from parasytes.maps import getPlace
+from lib.parasytes import ra
+from lib.parasytes.maps import getPlace
 import json
+
 
 def cleanArtist(artist):
     artist.pop('__typename')
     return artist
+
 
 def cleanClub(club):
     finalClub = {}
@@ -14,8 +16,8 @@ def cleanClub(club):
     finalClub['name'] = club.get('name', 'null')
     finalClub['description'] = club.get('blurb', 'null')
     finalClub['address'] = club.get('address', 'null')
-    finalClub['region'] = 'BE' # shouldn't hardcode this
-    finalClub['country'] = 'DE' # same
+    finalClub['region'] = 'BE'  # shouldn't hardcode this
+    finalClub['country'] = 'DE'  # same
     finalClub['eventsSoFar'] = int(club.get('eventCountThisYear', '0'))
     finalClub['capacity'] = int(club.get('capacity', '0'))
     finalClub['recommended'] = bool(club.get('raSays', 'false'))
@@ -37,11 +39,13 @@ def cleanClub(club):
         finalClub['logo'] = result.get('icon', None)
     finalClub['image'] = club.get('photo', None)
     if finalClub['image'] == None:
-        finalClub['image'] = 'https://maps.googleapis.com/maps/api/place/photo?photo_reference=' + result.get('photos', [{}])[0].get('photo_reference', 'NULL')
+        finalClub['image'] = 'https://maps.googleapis.com/maps/api/place/photo?photo_reference=' + \
+            result.get('photos', [{}])[0].get('photo_reference', 'NULL')
     finalClub['types'] = result.get('types', [])
     return finalClub
 
-def cleanEvent(event, image = False):
+
+def cleanEvent(event, image=False):
     finalEvent = {}
     finalEvent['id'] = int(event.get('id', '0'))
     finalEvent['name'] = event.get('title', 'null')
@@ -55,7 +59,8 @@ def cleanEvent(event, image = False):
     finalEvent['lineup'] = event.get('lineup', 'null')
     finalEvent['ticketed'] = bool(event.get('isTicketed', 'false'))
     finalEvent['festival'] = bool(event.get('isFestival', 'false'))
-    finalEvent['club'] = int((event.get('venue', {'__ref': 'Venue:0'})['__ref']).split(':')[1])
+    finalEvent['club'] = int(
+        (event.get('venue', {'__ref': 'Venue:0'})['__ref']).split(':')[1])
     if image:
         finalEvent['images'] = event.get('images', [])
     return finalEvent
@@ -79,6 +84,7 @@ def getMixedClubs():
         clubs = pool.map(getMixedClub, clubs)
     return clubs
 
+
 def getEvent(event):
     if type(event) == str:
         event = ra.getEvent(event)
@@ -86,11 +92,13 @@ def getEvent(event):
         event = ra.getEvent(event['id'])
     return cleanEvent(event, True)
 
+
 def getEvents():
     events = ra.getEvents()
     with Pool(cpu_count()-1) as pool:
         events = pool.map(cleanEvent, events)
     return events
+
 
 if __name__ == '__main__':
     json.dump(getMixedClubs(), open('clubs.json', 'w'))
