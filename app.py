@@ -7,6 +7,7 @@ import sys
 sys.path.insert(1, path.abspath('./lib'))
 
 
+
 load_dotenv()
 KEY = getenv('KEY')
 if not KEY:
